@@ -1,51 +1,41 @@
-name: Build Docker Image
+name: Docker Build and Save
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Set up Docker Buildx
-        run: |
-          # Set up Docker CLI
-          echo '{"experimental": "enabled"}' > /home/runner/.docker/config.json
-          echo '{"experimental": "enabled"}' > $HOME/.docker/cli-plugins/config.json
-          echo '{"experimental": "enabled"}' > $HOME/.docker/config.json
-          sudo service docker restart
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
 
-          # Install Docker Buildx
-          git clone https://github.com/docker/buildx
-          cd buildx
-          sudo make install
+    - name: Build with Maven
+      run: mvn clean install
 
-      - name: Build the Docker image
-        run: |
-          docker buildx create --use
-          docker build -t my-java-app:latest -f Dockerfile .
-          docker images
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-      - name: Archive Docker image
-        if: success()
-        run: |
-          mkdir -p artifacts
-          docker save -o artifacts/my-java-app.tar my-java-app:latest
+    - name: Build Docker image
+      run: docker build -t todo-app-image .
 
-      - name: Upload Docker image as artifact
-        if: success()
-        uses: actions/upload-artifact@v2
-        with:
-          name: my-java-app
-          path: artifacts/my-java-app.tar
+    - name: Save Docker image as tar file
+      run: docker save todo-app-image:latest -o todo-app-image.tar
+
+    - name: Upload Docker image tar file
+      uses: actions/upload-artifact@v2
+      with:
+        name: todo-app-image.tar
+        path: todo-app-image.tar
