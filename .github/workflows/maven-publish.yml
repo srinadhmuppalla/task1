@@ -1,4 +1,4 @@
-name: Build and Package
+name: Java MatrixPrograms
 
 on:
   push:
@@ -12,19 +12,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
 
-    - name: Set up JDK
+    - name: Set up Java
       uses: actions/setup-java@v2
       with:
-        java-version: '16'  # Update to the desired Java version
+        java-version: '11'  # Adjust to your desired Java version
 
-    - name: Build with Maven
-      run: mvn clean package
+    - name: Compile and Run
+      run: |
+        javac -cp . MatrixPrograms.java
+        java -cp . com.journaldev.examples.MatrixPrograms
 
-    - name: Upload JAR artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: my-application
-        path: target/my-application.jar
