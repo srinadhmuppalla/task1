@@ -3,7 +3,7 @@ name: Java Build and Package
 on:
   push:
     branches:
-      - main  # Change this to your main branch name
+      - main
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:
-        java-version: '8'
+        java-version: 11
 
     - name: Build with Maven
       run: mvn clean package
