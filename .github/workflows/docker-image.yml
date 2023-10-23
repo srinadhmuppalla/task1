@@ -1,0 +1,45 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Java
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+
+    - name: Build the Java application
+      run: |
+        mvn package
+        cp target/FactorialCalculator.class FactorialCalculator.class
+
+    - name: Set up Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install docker.io
+        sudo docker --version
+
+    - name: Build and tag Docker image
+      run: |
+        docker build -t my-java-app .
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login docker.pkg.github.com -u ${{ github.repository_owner }} --password-stdin
+        docker tag my-java-app:latest docker.pkg.github.com/${{ github.repository }}/my-java-app:latest
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        docker push docker.pkg.github.com/${{ github.repository }}/my-java-app:latest
+
+    - name: Clean up
+      run: |
+        docker logout docker.pkg.github.com
+
