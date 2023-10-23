@@ -1,11 +1,29 @@
-version: '3'
-services:
-  factorial-calculator:
-    image: openjdk:8-jdk-alpine
-    container_name: factorial-calculator-container
-    working_dir: /usr/src/app
-    ports:
-      - "8080:8080"
-    command: ["java", "-jar", "app.jar"]
-    volumes:
-      - ./target/factorial-calculator-1.0-SNAPSHOT.jar:/usr/src/app/app.jar
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main  # Change this to match the branch where your code is
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build Docker image
+      run: |
+        docker buildx create --use
+        docker buildx build --file Dockerfile --tag factorial-calculator:latest .
+        docker save -o factorial-calculator.tar factorial-calculator:latest
+
+    - name: Archive Docker image
+      uses: actions/upload-artifact@v2
+      with:
+        name: factorial-calculator
+        path: factorial-calculator.tar
