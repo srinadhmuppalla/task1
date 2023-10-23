@@ -1,4 +1,4 @@
-name: Java MatrixPrograms
+name: Java Build
 
 on:
   push:
@@ -18,8 +18,5 @@ jobs:
       with:
         java-version: '11'  # Adjust to your desired Java version
 
-    - name: Compile and Run
-      run: |
-        javac -cp . MatrixPrograms.java
-        java -cp . com.journaldev.examples.MatrixPrograms
-
+    - name: Build with Maven
+      run: mvn clean package
