@@ -1,10 +1,28 @@
-# Configuration for Matrix Addition Java program
+name: Build and Package
 
-matrix_addition:
-  matrices:
-    firstMatrix:
-      - [1, 2]
-      - [3, 4]
-    secondMatrix:
-      - [5, 6]
-      - [7, 8]
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Upload JAR artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-application
+        path: target/my-application.jar
