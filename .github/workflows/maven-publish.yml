@@ -1,4 +1,4 @@
-name: Java Program
+name: Java Maven Build
 
 on:
   push:
@@ -8,19 +8,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          distribution: 'adopt'
+      
+      - name: Build with Maven
+        run: mvn package
 
-    - name: Set up Java
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'  # Specify the desired distribution
-
-    - name: Compile Java Program
-      run: javac SumCalculator.java
-
-    - name: Run Java Program
-      run: java SumCalculator
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: factorial-calculator
+          path: target/factorial-calculator-1.0-SNAPSHOT.jar
