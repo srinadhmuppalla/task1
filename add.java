@@ -1,69 +1,88 @@
-package com.journaldev.examples;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-public class MatrixPrograms {
+class Expense {
+    private String description;
+    private double amount;
 
-	public static void main(String[] args) {
-		System.out.println("Please enter the rows in the matrix");
-		Scanner sc = new Scanner(System.in);
-		int row = sc.nextInt();
-		System.out.println("Please enter the columns in the matrix");
-		int column = sc.nextInt();
+    public Expense(String description, double amount) {
+        this.description = description;
+        this.amount = amount;
+    }
 
-		int[][] first = new int[row][column];
-		int[][] second = new int[row][column];
+    public String getDescription() {
+        return description;
+    }
 
-		for (int r = 0; r < row; r++) {
-			for (int c = 0; c < column; c++) {
-				System.out.println(String.format("Enter first[%d][%d] integer", r, c));
-				first[r][c] = sc.nextInt();
-			}
-		}
+    public double getAmount() {
+        return amount;
+    }
+}
 
-		for (int r = 0; r < row; r++) {
-			for (int c = 0; c < column; c++) {
-				System.out.println(String.format("Enter second[%d][%d] integer", r, c));
-				second[r][c] = sc.nextInt();
-			}
-		}
+public class ExpenseTracker {
+    private List<Expense> expenses;
 
-		// close the scanner
-		sc.close();
+    public ExpenseTracker() {
+        expenses = new ArrayList<>();
+    }
 
-		// print both matrices
-		System.out.println("First Matrix:\n");
-		print2dArray(first);
+    public void addExpense(String description, double amount) {
+        Expense expense = new Expense(description, amount);
+        expenses.add(expense);
+    }
 
-		System.out.println("Second Matrix:\n");
-		print2dArray(second);
+    public double calculateTotalExpenses() {
+        double total = 0;
+        for (Expense expense : expenses) {
+            total += expense.getAmount();
+        }
+        return total;
+    }
 
-		// sum of matrices
-		sum(first, second);
-	}
+    public void displayExpenses() {
+        System.out.println("Expense List:");
+        for (Expense expense : expenses) {
+            System.out.println("Description: " + expense.getDescription() + ", Amount: $" + expense.getAmount());
+        }
+    }
 
-	// below code doesn't take care of exceptions
-	private static void sum(int[][] first, int[][] second) {
-		int row = first.length;
-		int column = first[0].length;
-		int[][] sum = new int[row][column];
+    public static void main(String[] args) {
+        ExpenseTracker tracker = new ExpenseTracker();
+        Scanner scanner = new Scanner(System.in);
 
-		for (int r = 0; r < row; r++) {
-			for (int c = 0; c < column; c++) {
-				sum[r][c] = first[r][c] + second[r][c];
-			}
-		}
+        while (true) {
+            System.out.println("\nExpense Tracker Menu:");
+            System.out.println("1. Add Expense");
+            System.out.println("2. View Expenses");
+            System.out.println("3. Calculate Total Expenses");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume the newline character
 
-		System.out.println("\nSum of Matrices:\n");
-		print2dArray(sum);
-	}
-
-	private static void print2dArray(int[][] matrix) {
-		for (int r = 0; r < matrix.length; r++) {
-			for (int c = 0; c < matrix[0].length; c++) {
-				System.out.print(matrix[r][c] + "\t");
-			}
-			System.out.println();
-		}
-	}
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter expense description: ");
+                    String description = scanner.nextLine();
+                    System.out.print("Enter expense amount: $");
+                    double amount = scanner.nextDouble();
+                    tracker.addExpense(description, amount);
+                    break;
+                case 2:
+                    tracker.displayExpenses();
+                    break;
+                case 3:
+                    double total = tracker.calculateTotalExpenses();
+                    System.out.println("Total Expenses: $" + total);
+                    break;
+                case 4:
+                    System.out.println("Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
 }
