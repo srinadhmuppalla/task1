@@ -1,4 +1,4 @@
-name: Java Build
+name: Java Program
 
 on:
   push:
@@ -18,5 +18,8 @@ jobs:
       with:
         java-version: '11'  # Adjust to your desired Java version
 
-    - name: Build with Maven
-      run: mvn clean package
+    - name: Compile Java Program
+      run: javac SumCalculator.java
+
+    - name: Run Java Program
+      run: java SumCalculator
